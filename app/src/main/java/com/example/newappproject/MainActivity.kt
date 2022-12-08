@@ -42,18 +42,16 @@ import java.io.OutputStream
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding:ActivityMainBinding
-    lateinit var usedDatabase :AppDatabse
-    lateinit var viewModel:MyDataViewModel
-    lateinit var networkCheck:NetworkCheck
-    lateinit var repositoryAll:RepositoryAll
-    lateinit var imageview:ImageView
-    lateinit var button:Button
-    lateinit var closeimage:ImageView
-    lateinit var downloadButton:LinearLayout
-    lateinit var playButton:LinearLayout
-
-
+    lateinit var binding: ActivityMainBinding
+    lateinit var usedDatabase: AppDatabse
+    lateinit var viewModel: MyDataViewModel
+    lateinit var networkCheck: NetworkCheck
+    lateinit var repositoryAll: RepositoryAll
+    lateinit var imageview: ImageView
+    lateinit var button: Button
+    lateinit var closeimage: ImageView
+    lateinit var downloadButton: LinearLayout
+    lateinit var playButton: LinearLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,18 +65,25 @@ class MainActivity : AppCompatActivity() {
         loadImage()
         checkPremiumData()
         longClickAction()
-     saveImageToStorage()
-
+        saveImageToStorage()
         playVideo()
 
 
     }
 
     private fun saveImageToStorage() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),1)
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),1)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            1
+        )
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            1
+        )
 
-        val cardView =findViewById<ImageView>(R.id.download_img)
+        val cardView = findViewById<ImageView>(R.id.download_img)
         val captureButton = findViewById<LinearLayout>(R.id.download_btn)
 
         captureButton.setOnClickListener {
@@ -89,15 +94,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun getScreenShotFromView(v: View): Bitmap? {
-        var screenshot:Bitmap?=null
+        var screenshot: Bitmap? = null
         try {
-            screenshot = Bitmap.createBitmap(v.measuredWidth, v.measuredHeight, Bitmap.Config.ARGB_8888)
+            screenshot =
+                Bitmap.createBitmap(v.measuredWidth, v.measuredHeight, Bitmap.Config.ARGB_8888)
 
             val canvas = Canvas(screenshot)
             v.draw(canvas)
-        }catch (e:Exception){
-            Log.e("DOWN","Failed to capture img because:"+e.message)
+        } catch (e: Exception) {
+            Log.e("DOWN", "Failed to capture img because:" + e.message)
         }
         return screenshot
     }
@@ -115,19 +122,21 @@ class MainActivity : AppCompatActivity() {
                 val contentValues = ContentValues().apply {
 
                     put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "img_download/jpeg")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image_download/jpeg")
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
                 }
 
 
-                val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                val imageUri: Uri? =
+                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
 
                 fos = imageUri?.let { resolver.openOutputStream(it) }
             }
         } else {
 
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val imagesDir =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
             val image = File(imagesDir, filename)
             fos = FileOutputStream(image)
         }
@@ -135,32 +144,31 @@ class MainActivity : AppCompatActivity() {
         fos?.use {
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            Toast.makeText(this , "Saved to Gallery" , Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Saved to Gallery", Toast.LENGTH_SHORT).show()
         }
     }
 
 
-    var TAG =  "@@@@@@"
+    var TAG = "@@@@@@"
     private fun playVideo() {
-        var uri = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-        var videoView  = binding.videoView
+        var uri =
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        var videoView = binding.videoView
 
         videoView.setVideoURI(Uri.parse(uri))
-        var controler  = MediaController(this)
-        var position:Int = 0
-        var checkerPlay: Int  =  0
-        playButton.setOnClickListener{
-            if(checkerPlay%2==0&&checkerPlay!=0){
+        var controler = MediaController(this)
+        var position: Int = 0
+        var checkerPlay: Int = 0
+        playButton.setOnClickListener {
+            if (checkerPlay % 2 == 0 && checkerPlay != 0) {
                 videoView.seekTo(position)
                 videoView.start()
                 Log.d(TAG, "playVideo: resume")
-            }
-            else if (checkerPlay%2==1&&checkerPlay!=0){
+            } else if (checkerPlay % 2 == 1 && checkerPlay != 0) {
                 Log.d(TAG, "playVideo:pausa ")
                 videoView.pause()
-                position =videoView.currentPosition
-            }
-            else{
+                position = videoView.currentPosition
+            } else {
                 Log.d(TAG, "playVideo: start")
                 videoView.start()
             }
@@ -168,8 +176,6 @@ class MainActivity : AppCompatActivity() {
             checkerPlay++
 
         }
-
-
 
 
     }
@@ -194,84 +200,81 @@ class MainActivity : AppCompatActivity() {
     private fun checkPremiumData() {
         viewModel.getLocalData().observe(this, Observer {
             Log.d("@@@@@", "onCreate:${it.grammer} ")
-            if(it.grammer==false){
+            if (it.grammer == false) {
                 binding.GrammerSheet.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 binding.GrammerSheet.visibility = View.GONE
             }
-            if(it.homework==false){
+            if (it.homework == false) {
                 binding.HomeWorkSheet.visibility = View.VISIBLE
-            }
-            else{
+            } else {
                 binding.HomeWorkSheet.visibility = View.GONE
             }
-            if(it.spiking==false){
+            if (it.spiking == false) {
                 binding.SpeakingSheet.visibility = View.VISIBLE
 
-            }
-            else{
+            } else {
                 binding.SpeakingSheet.visibility = View.GONE
             }
-            if(it.listining==false){
+            if (it.listining == false) {
                 binding.ListeningSheet.visibility = View.VISIBLE
+            } else {
+                binding.ListeningSheet.visibility = View.GONE
             }
-            else{
-                binding.ListeningSheet.visibility  = View.GONE
-            }
-            if(it.vocablary==false){
+            if (it.vocablary == false) {
                 binding.VocablarySheet.visibility = View.VISIBLE
-            }
-            else{
-                binding.VocablarySheet.visibility  = View.GONE
+            } else {
+                binding.VocablarySheet.visibility = View.GONE
             }
         })
     }
 
     private fun loadImage() {
         viewModel.getRemotedaFun().observe(this, Observer {
-          //  Glide.with(this).load(it.urls.small).centerCrop().into(imageview)
+            //  Glide.with(this).load(it.urls.small).centerCrop().into(imageview)
             Glide.with(this).load(it.urls.small).centerCrop().into(imageview)
         })
     }
 
-    private fun instalValueFun(){
+    private fun instalValueFun() {
         downloadButton = binding.downloadBtn
-        playButton =  binding.playButton
+        playButton = binding.playButton
 
-        networkCheck  = NetworkCheck()
-        var apiClient  = ApiClient.getClient().create(ApiService::class.java)
-        usedDatabase   = AppDatabse.getInstance(this)!!
-        repositoryAll= RepositoryAll(apiClient,usedDatabase!!)
+        networkCheck = NetworkCheck()
+        var apiClient = ApiClient.getClient().create(ApiService::class.java)
+        usedDatabase = AppDatabse.getInstance(this)!!
+        repositoryAll = RepositoryAll(apiClient, usedDatabase!!)
 
-        viewModel = MyDataViewModel(networkCheck,repositoryAll)
+        viewModel = MyDataViewModel(networkCheck, repositoryAll)
 
     }
-    private fun createDialog(){
-        var dialog  = AlertDialog.Builder(this)
-        var view  = LayoutInflater.from(this).inflate(R.layout.dialogs_layout,null,false)
-        imageview  = view.findViewById(R.id.dialog_imageview)
+
+    private fun createDialog() {
+        var dialog = AlertDialog.Builder(this)
+        var view = LayoutInflater.from(this).inflate(R.layout.dialogs_layout, null, false)
+        imageview = view.findViewById(R.id.dialog_imageview)
         button = view.findViewById(R.id.dialog_button)
-        closeimage =  view.findViewById(R.id.imageView_cancel)
+        closeimage = view.findViewById(R.id.imageView_cancel)
 
         dialog.setView(view)
-        var alertDialog:AlertDialog  = dialog.create()
+        var alertDialog: AlertDialog = dialog.create()
         alertDialog.show()
-        button.setOnClickListener{
+        button.setOnClickListener {
             alertDialog.dismiss()
         }
-        closeimage.setOnClickListener{
+        closeimage.setOnClickListener {
             alertDialog.dismiss()
         }
     }
 
     private fun checkFirstInstal() {
-        if(usedDatabase.getUserDao().getPremiumData().isEmpty()){
-           viewModel.insertDataFirstTime(PremiumData(null))
+        if (usedDatabase.getUserDao().getPremiumData().isEmpty()) {
+            viewModel.insertDataFirstTime(PremiumData(null))
         }
     }
+
     @SuppressLint("ClickableViewAccessibility")
-    fun longPressFun(linearLayout: LinearLayout):Boolean{
+    fun longPressFun(linearLayout: LinearLayout): Boolean {
         val longClickDuration = 5000
         var isLongPress = false
 
@@ -280,7 +283,7 @@ class MainActivity : AppCompatActivity() {
                 isLongPress = true
                 val handler = Handler()
                 handler.postDelayed({
-                    if(isLongPress){
+                    if (isLongPress) {
                         upDatefunksion(linearLayout.id)
                     }
                 }, longClickDuration.toLong())
@@ -292,135 +295,146 @@ class MainActivity : AppCompatActivity() {
         return isLongPress
     }
 
-    private fun upDatefunksion(id:Int) {
-        when(id){
-            binding.GrammerSheet.id->{binding.GrammerSheet.visibility = View.GONE
+    private fun upDatefunksion(id: Int) {
+        when (id) {
+            binding.GrammerSheet.id -> {
+                binding.GrammerSheet.visibility = View.GONE
                 viewModel.getLocalData().observe(this, Observer {
 
-                    var data  =it
-                    data.grammer=true
+                    var data = it
+                    data.grammer = true
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.SpeakingSheet.id->{binding.SpeakingSheet.visibility = View.GONE
+            binding.SpeakingSheet.id -> {
+                binding.SpeakingSheet.visibility = View.GONE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.spiking=true
+                    var data = it
+                    data.spiking = true
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.VocablarySheet.id->{binding.VocablarySheet.visibility = View.GONE
+            binding.VocablarySheet.id -> {
+                binding.VocablarySheet.visibility = View.GONE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.vocablary=true
+                    var data = it
+                    data.vocablary = true
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.ListeningSheet.id->{binding.ListeningSheet.visibility = View.GONE
+            binding.ListeningSheet.id -> {
+                binding.ListeningSheet.visibility = View.GONE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.listining=true
+                    var data = it
+                    data.listining = true
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.HomeWorkSheet.id->{binding.HomeWorkSheet.visibility = View.GONE
-            viewModel.getLocalData().observe(this, Observer {
-                var data  =it
-                data.homework=true
-                viewModel.updateDataDatabase(data)
+            binding.HomeWorkSheet.id -> {
+                binding.HomeWorkSheet.visibility = View.GONE
+                viewModel.getLocalData().observe(this, Observer {
+                    var data = it
+                    data.homework = true
+                    viewModel.updateDataDatabase(data)
 
-            })
-        }
+                })
+            }
 
 
         }
     }
+
     @SuppressLint("ClickableViewAccessibility")
-    fun tripleTapCheck(linearLayout: LinearLayout){
+    fun tripleTapCheck(linearLayout: LinearLayout) {
         linearLayout.setOnTouchListener(
-        object : OnTouchListener {
-            var handler = Handler()
-            var numberOfTaps = 0
-            var lastTapTimeMs: Long = 0
-            var touchDownMs: Long = 0
-            override fun onTouch(v: View, event: MotionEvent): Boolean {
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> touchDownMs = System.currentTimeMillis()
-                    MotionEvent.ACTION_UP -> {
-                        handler.removeCallbacksAndMessages(null)
-                        if (System.currentTimeMillis() - touchDownMs > ViewConfiguration.getTapTimeout()) {
-                            //it was not a tap
-                            numberOfTaps = 0
-                            lastTapTimeMs = 0
+            object : OnTouchListener {
+                var handler = Handler()
+                var numberOfTaps = 0
+                var lastTapTimeMs: Long = 0
+                var touchDownMs: Long = 0
+                override fun onTouch(v: View, event: MotionEvent): Boolean {
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> touchDownMs = System.currentTimeMillis()
+                        MotionEvent.ACTION_UP -> {
+                            handler.removeCallbacksAndMessages(null)
+                            if (System.currentTimeMillis() - touchDownMs > ViewConfiguration.getTapTimeout()) {
+                                //it was not a tap
+                                numberOfTaps = 0
+                                lastTapTimeMs = 0
 
-                        }
-                        if (numberOfTaps > 0
-                            && System.currentTimeMillis() - lastTapTimeMs < ViewConfiguration.getDoubleTapTimeout()
-                        ) {
-                            numberOfTaps += 1
-                        } else {
-                            numberOfTaps = 1
-                        }
-                        lastTapTimeMs = System.currentTimeMillis()
-                        if (numberOfTaps == 3) {
+                            }
+                            if (numberOfTaps > 0
+                                && System.currentTimeMillis() - lastTapTimeMs < ViewConfiguration.getDoubleTapTimeout()
+                            ) {
+                                numberOfTaps += 1
+                            } else {
+                                numberOfTaps = 1
+                            }
+                            lastTapTimeMs = System.currentTimeMillis()
+                            if (numberOfTaps == 3) {
 
-                            tripleClickAction(linearLayout.id)
+                                tripleClickAction(linearLayout.id)
 
-                        } else if (numberOfTaps == 2) {
-                            handler.postDelayed({ //handle double tap
+                            } else if (numberOfTaps == 2) {
+                                handler.postDelayed({ //handle double tap
 
-                            }, ViewConfiguration.getDoubleTapTimeout().toLong())
+                                }, ViewConfiguration.getDoubleTapTimeout().toLong())
+                            }
                         }
                     }
+                    return true
                 }
-                return true
-            }
-        })
+            })
 
     }
 
-    fun tripleClickAction(id: Int){
-        when(id){
-            binding.Grammer.id->{binding.GrammerSheet.visibility = View.VISIBLE
+    fun tripleClickAction(id: Int) {
+        when (id) {
+            binding.Grammer.id -> {
+                binding.GrammerSheet.visibility = View.VISIBLE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.grammer=false
+                    var data = it
+                    data.grammer = false
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.Speaking.id->{binding.SpeakingSheet.visibility = View.VISIBLE
+            binding.Speaking.id -> {
+                binding.SpeakingSheet.visibility = View.VISIBLE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.spiking=false
+                    var data = it
+                    data.spiking = false
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.Vocablary.id->{binding.VocablarySheet.visibility = View.VISIBLE
+            binding.Vocablary.id -> {
+                binding.VocablarySheet.visibility = View.VISIBLE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.vocablary=false
+                    var data = it
+                    data.vocablary = false
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.Listening.id->{binding.ListeningSheet.visibility = View.VISIBLE
+            binding.Listening.id -> {
+                binding.ListeningSheet.visibility = View.VISIBLE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.listining=false
+                    var data = it
+                    data.listining = false
                     viewModel.updateDataDatabase(data)
 
                 })
             }
-            binding.HomeWork.id->{binding.HomeWorkSheet.visibility = View.VISIBLE
+            binding.HomeWork.id -> {
+                binding.HomeWorkSheet.visibility = View.VISIBLE
                 viewModel.getLocalData().observe(this, Observer {
-                    var data  =it
-                    data.homework=false
+                    var data = it
+                    data.homework = false
                     viewModel.updateDataDatabase(data)
 
                 })
