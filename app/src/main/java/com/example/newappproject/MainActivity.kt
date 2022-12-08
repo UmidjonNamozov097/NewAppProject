@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             val canvas = Canvas(screenshot)
             v.draw(canvas)
         }catch (e:Exception){
-            Log.e("GFG","Failed to capture screenshot because:"+e.message)
+            Log.e("DOWN","Failed to capture img because:"+e.message)
         }
         return screenshot
     }
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         var fos: OutputStream? = null
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // getting the contentResolver
+
             this.contentResolver?.also { resolver ->
 
                 val contentValues = ContentValues().apply {
@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         fos?.use {
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            Toast.makeText(this , "Captured View and saved to Gallery" , Toast.LENGTH_SHORT).show()
+            Toast.makeText(this , "Saved to Gallery" , Toast.LENGTH_SHORT).show()
         }
     }
 
